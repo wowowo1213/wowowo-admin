@@ -21,8 +21,8 @@ const router = createRouter({
       children: [
         {
           path: 'dashboard',
-          component: () => import('@/views/dashboard/index.vue'),
           name: 'Dashboard',
+          component: () => import('@/views/dashboard/index.vue'),
           meta: { title: 'Dashboard', requiresAuth: true }
         },
       ]
@@ -30,6 +30,7 @@ const router = createRouter({
 
     {
       path: '/example',
+      name: 'Example',
       component: Layout,
       meta: { title: 'Table', requiresAuth: true },
       children: [
