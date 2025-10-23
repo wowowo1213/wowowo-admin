@@ -9,6 +9,7 @@ import Components from 'unplugin-vue-components/vite';
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
 import svgicon from 'vite-plugin-svgicon';
 import { viteMockServe } from 'vite-plugin-mock';
+import tailwindcss from '@tailwindcss/vite';
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -30,6 +31,7 @@ export default defineConfig({
     viteMockServe({
       mockPath: 'mock',
     }),
+    tailwindcss(),
   ],
   resolve: {
     alias: {
