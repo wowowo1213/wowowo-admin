@@ -8,13 +8,13 @@ const tokens = {
 
 const users = {
   'admin-token': {
-    roles: ['admin'],
+    roles: 'admin',
     introduction: '这是一个超级管理员',
     avatar: '../public/二次元头像.jpg',
     name: 'wowowo-admin',
   },
   'editor-token': {
-    roles: ['editor'],
+    roles: 'editor',
     introduction: '这是一个普通管理员',
     avatar: '../public/曼波.jpg',
     name: 'wowowo-1213',

@@ -7,7 +7,7 @@ interface UserState {
   token: string;
   name: string;
   avatar: string;
-  roles: string[];
+  roles: string;
   hasUserInfo: boolean;
   loadingUserInfo: boolean;
 }
@@ -23,7 +23,7 @@ export const useUserStore = defineStore('user', {
       token: getToken() || '',
       name: '',
       avatar: '',
-      roles: [],
+      roles: '',
       hasUserInfo: false,
       loadingUserInfo: false,
     }
@@ -34,7 +34,7 @@ export const useUserStore = defineStore('user', {
       this.token = getToken() || '';
       this.name = '';
       this.avatar = '';
-      this.roles = [];
+      this.roles = '';
       this.hasUserInfo = false;
       this.loadingUserInfo = false;
     },
@@ -62,7 +62,7 @@ export const useUserStore = defineStore('user', {
         this.name = name;
         this.avatar = avatar;
         this.roles = roles;
-        this.hasUserInfo = true; // 在store中直接修改，而不用从data中获取，就不用修改后端数据，不然太麻烦
+        this.hasUserInfo = true;
         this.loadingUserInfo = false;
         return data;
       } catch (error) {

@@ -3,7 +3,7 @@
  * @return {Boolean}
  */
 export const isValidUsername = (str: string) => {
-  const name = ['wowowo-1213', 'wowowo-admin']; // 这边用来设置允许的用户名，拥有的才能登陆
+  const name = ['wowowo-1213', 'wowowo-admin']; // 这边用来设置允许的用户名，拥有的才能登陆，其实只是一个前端的小匹配而已，不符合的会alert
   return name.indexOf(str.trim()) >= 0;
 }
 

@@ -1,114 +1,147 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router';
 import Layout from '@/layout/index.vue';
 import Login from '@/views/login/index.vue';
 import { useUserStore } from '@/stores/user';
 import { getToken } from '@/utils/auth';
 
+// 这边是静态路由
+// meta中的requiresAuth用来判断是否需要登陆才能访问
+const constantRoutes = [
+  {
+    path: '/login',
+    name: 'Login',
+    component: Login,
+    meta: { requiresAuth: false }
+  },
+  {
+    path: '/',
+    component: Layout,
+    redirect: '/dashboard',
+    children: [
+      {
+        path: 'dashboard',
+        name: 'Dashboard',
+        component: () => import('@/views/dashboard/index.vue'),
+        meta: { title: 'Dashboard', requiresAuth: true },
+      },
+    ]
+  },
+  {
+    path: '/example',
+    name: 'Example',
+    component: Layout,
+    meta: { title: 'Table', requiresAuth: true },
+    children: [
+      {
+        path: 'table',
+        name: 'Table',
+        component: () => import('@/views/table/index.vue'),
+        meta: { title: 'Table', requiresAuth: true }
+      },
+    ]
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: () => import('@/views/404.vue'),
+    meta: { requiresAuth: false }
+  }
+];
+
+// 动态路由
+const dynamicRoutes = [
+  {
+    path: '/example',
+    name: 'Example',
+    component: Layout,
+    meta: { title: 'Table', requiresAuth: true },
+    children: [
+      {
+        path: 'normolUser',
+        name: 'NormolUser',
+        component: () => import('@/views/text/NormalUser.vue'),
+        meta: { title: 'NormalUser', requiresAuth: true, roles: 'editor' }
+      },
+      {
+        path: 'adminUser',
+        name: 'AdminUser',
+        component: () => import('@/views/text/AdminUser.vue'),
+        meta: { title: 'AdminUser', requiresAuth: true, roles: 'admin' }
+      },
+      {
+        path: 'adminUser2',
+        name: 'AdminUser2',
+        component: () => import('@/views/text/AdminUser.vue'),
+        meta: { title: 'AdminUser2', requiresAuth: true, roles: 'admin' }
+      }
+    ]
+  }
+];
+
 const router = createRouter({
   history: createWebHistory(),
-  routes: [
-    {
-      path: '/login',
-      name: 'Login',
-      component: Login,
-      meta: { requiresAuth: false }
-    },
-
-    {
-      path: '/',
-      component: Layout,
-      redirect: '/dashboard',
-      children: [
-        {
-          path: 'dashboard',
-          name: 'Dashboard',
-          component: () => import('@/views/dashboard/index.vue'),
-          meta: { title: 'Dashboard', requiresAuth: true }
-        },
-      ]
-    },
-
-    {
-      path: '/example',
-      name: 'Example',
-      component: Layout,
-      meta: { title: 'Table', requiresAuth: true },
-      children: [
-        {
-          path: 'table',
-          name: 'Table',
-          component: () => import('@/views/table/index.vue'),
-          meta: { title: 'Table', requiresAuth: true }
-        },
-        {
-          path: 'normolUser',
-          name: 'NormolUser',
-          component: () => import('@/views/text/NormalUser.vue'),
-          meta: { title: 'NormalUser', requiresAuth: true }
-        },
-        {
-          path: 'adminUser',
-          name: 'AdminUser',
-          component: () => import('@/views/text/AdminUser.vue'),
-          meta: { title: 'AdminUser', requiresAuth: true }
-        },
-      ]
-    },
-
-    {
-      path: '/404',
-      component: () => import('@/views/404.vue'),
-      meta: { requiresAuth: false }
-    }
-  ]
+  routes: constantRoutes
 });
+
+async function loadRoutes(role: string) {
+  dynamicRoutes.forEach(route => {
+    if (router.hasRoute(route.name)) {
+      router.removeRoute(route.name);
+    }
+  });
+
+  const filterRoutes = (routes: RouteRecordRaw[]) => {
+    return routes.filter(route => {
+      if (route.children && route.children.length > 0) {
+        route.children = filterRoutes(route.children);
+      }
+
+      const hasPermission = !route.meta?.role ||
+        (Array.isArray(route.meta.role) &&
+          route.meta.role.includes(role));
+
+      return hasPermission || (route.children && route.children.length > 0);
+    });
+  };
+
+  const filteredRoutes = filterRoutes(dynamicRoutes);
+
+  filteredRoutes.forEach(route => {
+    router.addRoute(route);
+  });
+}
 
 router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore();
   const hasToken = getToken();
 
   if (to.matched.length === 0) {
-    return next('/404');
+    return next({ name: 'NotFound' });
   }
 
   if (hasToken) {
-    // 这边主要是根据token来刷新本地用户信息
-    if (to.path === '/login') {
-      next({ path: '/' });
-    } else if (to.path === '/example/adminUser') {
-      if (userStore.roles[0] === 'admin') {
-        next();
-      } else {
-        alert('您没有权限访问该页面');
-        next(false);
-      }
+    if (userStore.hasUserInfo) {
+      next();
     } else {
-      if (userStore.hasUserInfo) {
-        next();
-      } else {
-        try {
-          if (userStore.loadingUserInfo) {
-            // 这个设置可以避免重复请求用户信息，因为loading为真值，说明正在请求中
-            return next(false);
-          }
-          userStore.loadingUserInfo = true;
-          await userStore.getInfo();
-          next({ ...to, replace: true });
-        } catch (error) {
-          console.error('Router中的错误，Auth error:', error);
-          await userStore.resetToken();
-          next(`/login?redirect=${to.path}`);
-        } finally {
-          userStore.loadingUserInfo = false;
+      try {
+        if (userStore.loadingUserInfo) {
+          return next(false);
         }
+        userStore.loadingUserInfo = true;
+        await userStore.getInfo();
+        next({ ...to, replace: true });
+      } catch (error) {
+        console.error('Router中的错误，Auth error:', error);
+        await userStore.resetToken();
+        next(`/login?redirect=${to.path}`);
+      } finally {
+        userStore.loadingUserInfo = false;
       }
     }
   } else {
     if (to.meta.requiresAuth === false) {
-      // 没有token，但如果不需要认证，直接放行
       next();
     } else {
-      // 没有token，但需要认证，则跳转到登录页面，并记录当前路径
       next(`/login?redirect=${to.path}`);
     }
   }
