@@ -8,17 +8,17 @@ const tokens = {
 
 const users = {
   'admin-token': {
-    roles: 'admin',
+    role: 'admin',
     introduction: '这是一个超级管理员',
-    avatar: '../public/二次元头像.jpg',
+    userImg: '../public/二次元头像.jpg',
     name: 'wowowo-admin',
   },
   'editor-token': {
-    roles: 'editor',
+    role: 'editor',
     introduction: '这是一个普通管理员',
-    avatar: '../public/曼波.jpg',
+    userImg: '../public/曼波.jpg',
     name: 'wowowo-1213',
-  }
+  },
 };
 
 export const userMocks = [
@@ -28,7 +28,7 @@ export const userMocks = [
     if (!tokenData) {
       return {
         code: 6666,
-        message: '账号或密码不正确捏~(￣▽￣)~*'
+        message: '账号或密码不正确捏~(￣▽￣)~*',
       };
     }
     return {
@@ -44,18 +44,18 @@ export const userMocks = [
     if (!info) {
       return {
         code: 401,
-        message: '登录失效，无法获取用户信息🤣🤣.'
+        message: '登录失效，无法获取用户信息🤣🤣.',
       };
     }
 
     return {
-      code: 4000,
-      data: info
+      code: 400,
+      data: info,
     };
   }),
 
   Mock.mock('/api/wowowo-admin/user/logout', 'post', () => ({
     code: 20000,
-    data: 'success'
+    data: 'success',
   })),
 ];

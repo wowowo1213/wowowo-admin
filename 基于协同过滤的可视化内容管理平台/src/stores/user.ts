@@ -7,7 +7,7 @@ interface UserState {
   token: string;
   name: string;
   avatar: string;
-  roles: string;
+  role: string;
   hasUserInfo: boolean;
   loadingUserInfo: boolean;
 }
@@ -23,10 +23,10 @@ export const useUserStore = defineStore('user', {
       token: getToken() || '',
       name: '',
       avatar: '',
-      roles: '',
+      role: '',
       hasUserInfo: false,
       loadingUserInfo: false,
-    }
+    };
   },
 
   actions: {
@@ -34,7 +34,7 @@ export const useUserStore = defineStore('user', {
       this.token = getToken() || '';
       this.name = '';
       this.avatar = '';
-      this.roles = '';
+      this.role = '';
       this.hasUserInfo = false;
       this.loadingUserInfo = false;
     },
@@ -58,10 +58,10 @@ export const useUserStore = defineStore('user', {
         if (!data) {
           throw new Error('userStore中的getInfo有问题');
         }
-        const { name, avatar, roles } = data;
+        const { name, avatar, role } = data;
         this.name = name;
         this.avatar = avatar;
-        this.roles = roles;
+        this.role = role;
         this.hasUserInfo = true;
         this.loadingUserInfo = false;
         return data;
@@ -84,10 +84,8 @@ export const useUserStore = defineStore('user', {
     async resetToken() {
       removeToken();
       this.resetState();
-    }
+    },
   },
 
-  getters: {
-
-  },
+  getters: {},
 });

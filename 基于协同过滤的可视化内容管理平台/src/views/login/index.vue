@@ -2,35 +2,39 @@
   <div class="login-container">
     <div class="login-box">
       <h1 class="login-title">登录界面</h1>
- 
+
       <el-form :model="form" label-width="auto" class="login-form">
         <el-form-item label="用户名" class="form-item">
           <span class="svg-container">
-            <img :src="userIcon" alt="user" class="img-svg">
+            <img :src="userIcon" alt="user" class="img-svg" />
           </span>
-          <el-input 
-            v-model="form.username" 
+          <el-input
+            v-model="form.username"
             placeholder="用户名只能是wowowo-1213或者wowowo-admin"
             class="form-input"
           />
         </el-form-item>
- 
+
         <el-form-item label="密码" class="form-item">
           <span class="svg-container">
-            <img :src="passwordIcon" alt="password" class="img-svg">
+            <img :src="passwordIcon" alt="password" class="img-svg" />
           </span>
-          <el-input 
-            v-model="form.password" 
-            :type="passwordType" 
+          <el-input
+            v-model="form.password"
+            :type="passwordType"
             placeholder="密码是114514捏~(￣▽￣)~*"
             class="form-input"
-            @keyup.enter.native="handleLogin"
+            @keyup.enter="handleLogin"
           />
           <span class="show-pwd" @click="toggleShowPassword">
-            <img :src="passwordType === 'password' ? eyeIcon : eyeOpenIcon" alt="eye" class="img-svg" />
+            <img
+              :src="passwordType === 'password' ? eyeIcon : eyeOpenIcon"
+              alt="eye"
+              class="img-svg"
+            />
           </span>
         </el-form-item>
- 
+
         <el-form-item>
           <el-button type="primary" @click="handleLogin" class="login-btn">登录</el-button>
         </el-form-item>
@@ -62,7 +66,7 @@ const toggleShowPassword = () => {
   } else {
     passwordType.value = 'password';
   }
-}
+};
 
 // 这边是Element-plus的默认导入写法
 // do not use same name with ref
@@ -108,32 +112,31 @@ const handleLogin = async () => {
   background-color: #f5f7fa;
   padding: 20px;
 }
- 
+
 .login-box {
   width: 100%;
   max-width: 500px;
   background: white;
   padding: 40px;
   border-radius: 8px;
-  /* 这边下面 */
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
- 
+
 .login-title {
   text-align: center;
   margin-bottom: 30px;
   color: #333;
   font-size: 24px;
 }
- 
+
 .login-form {
   width: 100%;
 }
- 
+
 .form-item {
   margin-bottom: 22px;
 }
- 
+
 .form-input {
   width: 100%;
 }
@@ -142,31 +145,29 @@ const handleLogin = async () => {
   height: 52px;
   display: flex;
   align-items: center;
-  font-size: 16px
+  font-size: 16px;
 }
 
-/* 在.form-item中深度查找类名为 .el-input__inner 的元素 */
 .form-input :deep(.el-input__inner) {
   padding-left: 35px;
   height: 50px;
   font-size: 16px;
 }
- 
+
 .svg-container {
-  /* 这边是相对于el-form-item__content进行位移，为什么 */
   position: absolute;
   left: 10px;
   top: 60%;
   transform: translateY(-50%);
   z-index: 1;
 }
- 
+
 .img-svg {
   width: 18px;
   height: 18px;
   color: #c0c4cc;
 }
- 
+
 .show-pwd {
   position: absolute;
   right: 10px;
@@ -175,7 +176,7 @@ const handleLogin = async () => {
   cursor: pointer;
   z-index: 1;
 }
- 
+
 .login-btn {
   width: 100%;
   margin-top: 10px;
